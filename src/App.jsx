@@ -4,6 +4,7 @@ import FrameSelectionPage from './pages/FrameSelectionPage'
 import CameraPage from './pages/CameraPage'
 import TemplateFilterPage from './pages/TemplateFilterPage'
 import ResultPage from './pages/ResultPage'
+import './index.css'
 
 /**
  * Main App Component

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import Button from '../components/Button'
 import Card from '../components/Card'
+import { ToastContainer } from '../components/Toast'
 
 /**
  * Result Page - Display final processed image with download and share options
@@ -24,7 +25,9 @@ function ResultPage() {
 
   const handleDownload = () => {
     if (!finalImage) {
-      alert('Image not ready yet')
+      if (window.showToast) {
+        window.showToast('Image not ready yet', 'warning', 2000)
+      }
       return
     }
 
@@ -34,6 +37,10 @@ function ResultPage() {
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
+    
+    if (window.showToast) {
+      window.showToast('Photo downloaded successfully! 💾', 'success', 3000)
+    }
   }
 
   const handleShare = async () => {
@@ -54,7 +61,9 @@ function ResultPage() {
       } else {
         // Fallback: copy to clipboard
         await navigator.clipboard.writeText(finalImage)
-        alert('Image URL copied to clipboard!')
+        if (window.showToast) {
+          window.showToast('Image URL copied to clipboard!', 'success', 3000)
+        }
       }
     } catch (error) {
       console.error('Error sharing:', error)
@@ -99,6 +108,7 @@ function ResultPage() {
 
   return (
     <div className="min-h-screen p-4">
+      <ToastContainer />
       <div className="max-w-6xl mx-auto">
         {/* Success Header */}
         <div className="text-center mb-8 animate-slide-in">

@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import Button from '../components/Button'
 import Card from '../components/Card'
+import LoadingSpinner from '../components/LoadingSpinner'
+import { ToastContainer } from '../components/Toast'
 import { applyFilter, applyTemplate, loadImage } from '../utils/imageProcessing'
 
 /**
@@ -72,11 +74,17 @@ function TemplateFilterPage() {
 
   const handleGenerate = async () => {
     if (!selectedTemplate) {
-      alert('Please select a template first!')
+      if (window.showToast) {
+        window.showToast('Please select a template first!', 'warning', 3000)
+      }
       return
     }
 
     setIsGenerating(true)
+    
+    if (window.showToast) {
+      window.showToast('Generating your final photo...', 'info', 2000)
+    }
     
     // Ensure preview is generated
     if (!previewCanvas) {
@@ -89,6 +97,9 @@ function TemplateFilterPage() {
     const finalImage = canvasRef.current?.toDataURL('image/png') || previewCanvas
     
     setTimeout(() => {
+      if (window.showToast) {
+        window.showToast('Photo generated successfully! 🎉', 'success', 2000)
+      }
       navigate('/result', { 
         state: { 
           photos,
@@ -97,7 +108,7 @@ function TemplateFilterPage() {
           finalImage: finalImage || previewCanvas
         } 
       })
-    }, 500)
+    }, 800)
   }
 
   const handleBack = () => {
@@ -106,6 +117,7 @@ function TemplateFilterPage() {
 
   return (
     <div className="min-h-screen p-4">
+      <ToastContainer />
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8 animate-slide-in">
@@ -184,8 +196,9 @@ function TemplateFilterPage() {
                 className="max-w-full h-auto rounded-xl border-4 border-pink-300 shadow-2xl"
               />
             ) : (
-              <div className="w-full h-96 bg-gray-200 rounded-xl flex items-center justify-center">
-                <div className="text-gray-500 text-xl">Generating preview...</div>
+              <div className="w-full h-96 bg-gray-200 rounded-xl flex items-center justify-center flex-col gap-4">
+                <LoadingSpinner size="lg" />
+                <div className="text-gray-500 text-xl font-semibold">Generating preview...</div>
               </div>
             )}
           </div>
@@ -226,7 +239,14 @@ function TemplateFilterPage() {
             disabled={!selectedTemplate || isGenerating}
             className="min-w-[300px]"
           >
-            {isGenerating ? 'Generating Final Image...' : '🎨 Generate Final Image'}
+            {isGenerating ? (
+              <span className="flex items-center gap-2">
+                <LoadingSpinner size="sm" />
+                Generating Final Image...
+              </span>
+            ) : (
+              '🎨 Generate Final Image'
+            )}
           </Button>
           
           <Button

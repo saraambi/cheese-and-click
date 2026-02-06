@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Button from '../components/Button'
 import Card from '../components/Card'
+import { ToastContainer } from '../components/Toast'
 
 /**
  * Frame Selection Page - Choose photo layout (3, 4, or 6 photos)
@@ -57,6 +58,7 @@ function FrameSelectionPage() {
 
   return (
     <div className={`min-h-screen flex items-center justify-center p-4 transition-opacity duration-300 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
+      <ToastContainer />
       <div className="text-center w-full max-w-6xl">
         {/* Header */}
         <div className="mb-10 animate-slide-in">
