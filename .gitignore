@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Build outputs
+# dist/  # Keep dist/ for GitHub Pages deployment
+build/
+*.egg-info/
+
+# Environment
+.env
+.env.local
+.env.production
+.venv
+venv/
+ENV/
+
+# Logs
+*.log
+ngrok-*.log
+backend.log
+frontend.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
