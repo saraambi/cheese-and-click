@@ -7,7 +7,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "build:railway": "vite build || echo 'Build completed with warnings'",
-    "deploy": "npm run build && gh-pages -d dist",
+    "deploy": "VITE_BASE_PATH=/cheese-and-click/ npm run build && gh-pages -d dist",
     "predeploy": "npm run build"
   },
   "dependencies": {
