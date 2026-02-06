@@ -2,6 +2,8 @@
 
 Hướng dẫn deploy frontend lên GitHub Pages (github.io).
 
+**📖 Xem [STEP_BY_STEP_DEPLOY.md](./STEP_BY_STEP_DEPLOY.md) để có hướng dẫn từng bước chi tiết nhất**
+
 ## 🚀 Quick Deploy
 
 ### Bước 1: Enable GitHub Pages
