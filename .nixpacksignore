@@ -1,0 +1,13 @@
+# Ignore frontend files when building with Nixpacks
+# Railway will only build backend
+
+node_modules/
+package.json
+package-lock.json
+vite.config.js
+tailwind.config.js
+postcss.config.js
+index.html
+src/
+dist/
+.github/

@@ -17,21 +17,24 @@ function FrameSelectionPage() {
       id: 3, 
       label: '3 Photos', 
       emoji: '📷📷📷',
-      description: 'Perfect for single portraits or small groups',
+      description: 'Vertical layout - Perfect for single portraits',
+      layout: 'vertical',
       preview: ['1', '2', '3']
     },
     { 
       id: 4, 
       label: '4 Photos', 
       emoji: '📸📸📸📸',
-      description: 'Ideal for couples or small groups',
+      description: 'Square layout (2×2) - Ideal for couples',
+      layout: 'square',
       preview: ['1', '2', '3', '4']
     },
     { 
       id: 6, 
       label: '6 Photos', 
       emoji: '📷📷📷📷📷📷',
-      description: 'Great for larger groups or more variety',
+      description: 'Rectangle layout (2×3) - Great for groups',
+      layout: 'rectangle',
       preview: ['1', '2', '3', '4', '5', '6']
     },
   ]
@@ -93,14 +96,16 @@ function FrameSelectionPage() {
               
               {/* Preview Grid */}
               <div className={`grid gap-2 ${
-                frame.id === 3 ? 'grid-cols-2' :
-                frame.id === 4 ? 'grid-cols-2' :
-                'grid-cols-3'
+                frame.id === 3 ? 'grid-cols-1' : // Vertical - 1 column
+                frame.id === 4 ? 'grid-cols-2' : // Square - 2x2
+                'grid-cols-2' // Rectangle - 2 columns
               }`}>
                 {frame.preview.map((num, i) => (
                   <div
                     key={i}
-                    className="aspect-square bg-gradient-to-br from-pink-200 to-purple-200 rounded-lg flex items-center justify-center text-2xl font-bold text-gray-600 border-2 border-white"
+                    className={`bg-gradient-to-br from-pink-200 to-purple-200 rounded-lg flex items-center justify-center text-2xl font-bold text-gray-600 border-2 border-white ${
+                      frame.id === 3 ? 'aspect-[3/4]' : 'aspect-square'
+                    }`}
                   >
                     {num}
                   </div>

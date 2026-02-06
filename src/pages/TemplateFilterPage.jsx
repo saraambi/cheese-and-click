@@ -4,7 +4,7 @@ import Button from '../components/Button'
 import Card from '../components/Card'
 import LoadingSpinner from '../components/LoadingSpinner'
 import { ToastContainer } from '../components/Toast'
-import { applyFilter, applyTemplate, loadImage } from '../utils/imageProcessing'
+import { applyFilter, applyLayoutAndTemplate, loadImage, FRAME_CONFIGS } from '../utils/imageProcessing'
 
 /**
  * Template & Filter Selection Page
@@ -14,6 +14,7 @@ function TemplateFilterPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const photos = location.state?.photos || []
+  const photoCount = location.state?.photoCount || photos.length
 
   const [selectedTemplate, setSelectedTemplate] = useState(1)
   const [selectedFilter, setSelectedFilter] = useState(null)
@@ -21,12 +22,13 @@ function TemplateFilterPage() {
   const [isGenerating, setIsGenerating] = useState(false)
   const canvasRef = useRef(null)
 
-  const templates = [
-    { id: 1, name: 'Heart Frame', emoji: '💖', description: 'Romantic heart layout' },
-    { id: 2, name: 'Star Frame', emoji: '⭐', description: 'Classic grid layout' },
-    { id: 3, name: 'Flower Frame', emoji: '🌸', description: 'Beautiful flower grid' },
-    { id: 4, name: 'Simple Frame', emoji: '📋', description: 'Clean and minimal' },
-  ]
+  // Import frame configs
+  const templates = FRAME_CONFIGS.map(config => ({
+    id: config.id,
+    name: config.name,
+    emoji: config.emoji,
+    description: `${config.patternType} pattern on ${config.bgColor === '#000000' ? 'black' : config.bgColor === '#1E3A8A' ? 'blue' : config.bgColor === '#FDF2F8' ? 'pink' : 'white'} background`
+  }))
 
   const filters = [
     { id: 1, name: 'Cute Pink', emoji: '💗', filter: 'filter-pink', description: 'Warm pink tones' },
@@ -55,8 +57,8 @@ function TemplateFilterPage() {
     canvas.height = 600
 
     try {
-      // Apply template
-      await applyTemplate(canvas, selectedTemplate, photos)
+      // Apply layout (based on photoCount) and template frame
+      await applyLayoutAndTemplate(canvas, photoCount, selectedTemplate, photos)
       
       // Apply filter if selected
       if (selectedFilter) {
@@ -103,6 +105,7 @@ function TemplateFilterPage() {
       navigate('/result', { 
         state: { 
           photos,
+          photoCount,
           templateId: selectedTemplate,
           filterId: selectedFilter,
           finalImage: finalImage || previewCanvas
@@ -124,8 +127,11 @@ function TemplateFilterPage() {
           <h1 className="text-5xl md:text-6xl font-bold text-white text-shadow-lg mb-4">
             Customize Your Photos 🎨
           </h1>
-          <p className="text-xl text-white/90 text-shadow">
-            Choose a template and filter to make your photos perfect
+          <p className="text-xl text-white/90 text-shadow mb-2">
+            Choose a decorative frame and filter to make your photos perfect
+          </p>
+          <p className="text-lg text-white/80 text-shadow">
+            Layout: {photoCount === 3 ? 'Vertical (3 photos)' : photoCount === 4 ? 'Square (2×2)' : 'Rectangle (2×3)'}
           </p>
         </div>
 
@@ -133,26 +139,47 @@ function TemplateFilterPage() {
           {/* Template Selection */}
           <Card>
             <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
-              Choose Template 🖼️
+              Choose Decorative Frame 🖼️
             </h2>
-            <div className="grid grid-cols-2 gap-4">
-              {templates.map((template) => (
-                <div
-                  key={template.id}
-                  onClick={() => setSelectedTemplate(template.id)}
-                  className={`p-6 rounded-2xl cursor-pointer transition-all duration-300 ${
-                    selectedTemplate === template.id
-                      ? 'bg-gradient-to-r from-pink-400 to-purple-500 text-white scale-105 shadow-xl ring-4 ring-yellow-400'
-                      : 'bg-gray-100 hover:bg-gray-200'
-                  }`}
-                >
-                  <div className="text-5xl mb-2">{template.emoji}</div>
-                  <p className="text-lg font-bold mb-1">{template.name}</p>
-                  <p className={`text-sm ${selectedTemplate === template.id ? 'text-white/90' : 'text-gray-600'}`}>
-                    {template.description}
-                  </p>
-                </div>
-              ))}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {templates.map((template) => {
+                const frameConfig = FRAME_CONFIGS.find(f => f.id === template.id)
+                return (
+                  <div
+                    key={template.id}
+                    onClick={() => setSelectedTemplate(template.id)}
+                    className={`p-4 rounded-2xl cursor-pointer transition-all duration-300 ${
+                      selectedTemplate === template.id
+                        ? 'scale-105 shadow-xl ring-4 ring-yellow-400'
+                        : 'hover:scale-102 hover:shadow-lg'
+                    }`}
+                    style={{
+                      background: frameConfig?.gradient 
+                        ? `linear-gradient(135deg, ${frameConfig.gradient[0]}, ${frameConfig.gradient[1]})`
+                        : frameConfig?.bgColor || '#ffffff',
+                      color: selectedTemplate === template.id ? '#ffffff' : '#333333'
+                    }}
+                  >
+                    <div className="text-4xl mb-2 text-center">{template.emoji}</div>
+                    <p className="text-base font-bold mb-1 text-center">{template.name}</p>
+                    <div 
+                      className="w-full h-16 rounded-lg mb-2 border-2"
+                      style={{
+                        borderColor: frameConfig?.patternColor || '#000000',
+                        backgroundColor: frameConfig?.bgColor || '#ffffff'
+                      }}
+                    >
+                      {/* Mini preview of pattern */}
+                      <div className="w-full h-full flex items-center justify-center text-xl">
+                        {template.emoji}
+                      </div>
+                    </div>
+                    <p className={`text-xs text-center ${selectedTemplate === template.id ? 'text-white/90' : 'text-gray-600'}`}>
+                      {frameConfig?.description || template.description}
+                    </p>
+                  </div>
+                )
+              })}
             </div>
           </Card>
 

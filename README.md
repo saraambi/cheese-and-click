@@ -20,7 +20,7 @@ A professional, commercial-ready virtual photobooth web application built with R
 - Node.js (v18+) and npm
 - Python 3.8+
 
-### Quick Setup
+### Local Development (localhost only)
 
 ```bash
 # Install Node.js if needed (Ubuntu/Debian)
@@ -30,12 +30,30 @@ sudo apt-get install nodejs npm
 ./start.sh
 ```
 
-The script will automatically:
-- Check dependencies
-- Install frontend packages
-- Create Python virtual environment
-- Install backend dependencies
-- Start both servers
+Access at `http://localhost:3000`
+
+### Network Mode (Local Network Access)
+
+```bash
+# Run network mode script
+./start-network.sh
+```
+
+Access from other devices on same network: `http://YOUR_IP:3000`
+
+### Internet Access (Public Access)
+
+**Quick method with ngrok:**
+```bash
+# Install ngrok first: https://ngrok.com/download
+./start-internet.sh
+```
+
+This will create public URLs that anyone can access from anywhere!
+
+**📖 See [QUICK_START_NETWORK.md](./QUICK_START_NETWORK.md) for local network**
+**📖 See [INTERNET_ACCESS.md](./INTERNET_ACCESS.md) for internet/public access**
+**📖 See [DEPLOYMENT.md](./DEPLOYMENT.md) for production deployment (VPS, Cloud)**
 
 ### Manual Setup
 

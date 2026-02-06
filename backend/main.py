@@ -14,16 +14,32 @@ import json
 import os
 from datetime import datetime
 
+# Environment variables
+BACKEND_HOST = os.getenv("BACKEND_HOST", "0.0.0.0")
+BACKEND_PORT = int(os.getenv("BACKEND_PORT", "8000"))
+BACKEND_RELOAD = os.getenv("BACKEND_RELOAD", "false").lower() == "true"
+ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
+DEBUG = os.getenv("DEBUG", "true").lower() == "true"
+
+# CORS configuration
+CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*")
+if CORS_ORIGINS == "*":
+    ALLOW_ORIGINS = ["*"]
+else:
+    ALLOW_ORIGINS = [origin.strip() for origin in CORS_ORIGINS.split(",")]
+
 app = FastAPI(
     title="Cheese & Click API",
     description="Virtual Photobooth API for photo capture, processing, and sharing",
-    version="1.0.0"
+    version="1.0.0",
+    docs_url="/docs" if DEBUG else None,
+    redoc_url="/redoc" if DEBUG else None,
 )
 
 # CORS middleware - configure for production
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=ALLOW_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -272,7 +288,8 @@ if __name__ == "__main__":
     # Use import string for reload to work properly
     uvicorn.run(
         "main:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=True  # Auto-reload on code changes
+        host=BACKEND_HOST,
+        port=BACKEND_PORT,
+        reload=BACKEND_RELOAD and ENVIRONMENT == "development",
+        log_level="debug" if DEBUG else "info"
     )

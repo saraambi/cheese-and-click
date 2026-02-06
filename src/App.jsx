@@ -11,8 +11,11 @@ import './index.css'
  * Handles routing for the photobooth application
  */
 function App() {
+  // Get base path for GitHub Pages (if deployed to subdirectory)
+  const basePath = import.meta.env.BASE_URL || '/'
+  
   return (
-    <Router>
+    <Router basename={basePath}>
       <Routes>
         <Route path="/" element={<StartPage />} />
         <Route path="/select-frame" element={<FrameSelectionPage />} />

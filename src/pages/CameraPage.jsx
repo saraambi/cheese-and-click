@@ -122,7 +122,7 @@ function CameraPage() {
           }
           stopCamera()
           setTimeout(() => {
-            navigate('/template-filter', { state: { photos: newPhotos } })
+            navigate('/template-filter', { state: { photos: newPhotos, photoCount: totalFrames } })
           }, 500)
         }
         return newPhotos
@@ -140,7 +140,7 @@ function CameraPage() {
   const handleFinish = () => {
     if (photos.length > 0) {
       stopCamera()
-      navigate('/template-filter', { state: { photos: [...photos] } })
+      navigate('/template-filter', { state: { photos: [...photos], photoCount: totalFrames } })
     }
   }
 
