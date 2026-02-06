@@ -14,46 +14,40 @@ A professional, commercial-ready virtual photobooth web application built with R
 
 ## 🚀 Quick Start
 
-**📝 See detailed installation guide at [INSTALL.md](./INSTALL.md)**
-
-### Requirements
-- Node.js (v18+) and npm
-- Python 3.8+
-
-### Local Development (localhost only)
+### Local Development
 
 ```bash
-# Install Node.js if needed (Ubuntu/Debian)
+# Install Node.js if needed
 sudo apt-get install nodejs npm
 
-# Run automated setup and start
-./start.sh
+# Install dependencies
+npm install
+
+# Start dev server
+npm run dev
 ```
 
 Access at `http://localhost:3000`
 
-### Network Mode (Local Network Access)
+### Deploy Frontend to GitHub Pages
+
+**📖 See [QUICK_DEPLOY.md](./QUICK_DEPLOY.md) for quick guide**
+**📖 See [DEPLOY_FRONTEND.md](./DEPLOY_FRONTEND.md) for detailed guide**
+
+**3 bước đơn giản:**
+1. Enable GitHub Pages (Settings → Pages → GitHub Actions)
+2. Set Secret: `VITE_API_URL` = `http://localhost:8000`
+3. Push code → Auto deploy!
+
+### Network Access
 
 ```bash
-# Run network mode script
+# Local network
 ./start-network.sh
-```
 
-Access from other devices on same network: `http://YOUR_IP:3000`
-
-### Internet Access (Public Access)
-
-**Quick method with ngrok:**
-```bash
-# Install ngrok first: https://ngrok.com/download
+# Internet (ngrok)
 ./start-internet.sh
 ```
-
-This will create public URLs that anyone can access from anywhere!
-
-**📖 See [QUICK_START_NETWORK.md](./QUICK_START_NETWORK.md) for local network**
-**📖 See [INTERNET_ACCESS.md](./INTERNET_ACCESS.md) for internet/public access**
-**📖 See [DEPLOYMENT.md](./DEPLOYMENT.md) for production deployment (VPS, Cloud)**
 
 ### Manual Setup
 
