@@ -1,0 +1,17 @@
+# Nixpacks configuration for Railway
+# Railway will use this instead of Dockerfile
+# Backend only - Frontend deployed separately on GitHub Pages
+
+[phases.setup]
+nixPkgs = ["python311"]
+
+# Only install backend dependencies
+[phases.install]
+cmds = [
+    "cd backend && pip install --no-cache-dir -r requirements.txt"
+]
+
+# No build phase needed - just Python backend
+
+[start]
+cmd = "cd backend && python -m uvicorn main:app --host 0.0.0.0 --port $PORT"

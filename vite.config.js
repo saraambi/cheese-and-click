@@ -1,23 +1,29 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// Get API URL from environment variable
-// In vite.config.js, use process.env (not import.meta.env)
-// import.meta.env only works in client code, not in config files
-const API_URL = process.env.VITE_API_URL || 'http://localhost:8000'
-const WS_URL = process.env.VITE_WS_URL || 'ws://localhost:8000'
+// Get API URL from environment variable or use default
+// Note: import.meta.env only works in Vite, use process.env for Node.js context
+const getEnvVar = (key, defaultValue) => {
+  if (typeof process !== 'undefined' && process.env) {
+    return process.env[key] || defaultValue
+  }
+  return defaultValue
+}
 
-// Base path for GitHub Pages
-// If repository name is not 'username.github.io', set this to '/repository-name/'
-// Otherwise, use '/'
+const API_URL = getEnvVar('VITE_API_URL', 'http://localhost:8000')
+const WS_URL = getEnvVar('VITE_WS_URL', 'ws://localhost:8000')
+
+// GitHub Pages base path (repository name)
+// Set to '/' for custom domain or root repository
+// Set to '/repository-name/' for username.github.io/repository-name
 const BASE_PATH = process.env.VITE_BASE_PATH || '/'
 
 export default defineConfig({
   plugins: [react()],
   base: BASE_PATH,
   server: {
-    host: '0.0.0.0',
-    port: 3000,
+    host: '0.0.0.0', // Allow access from network
+    port: parseInt(process.env.PORT || '3000'),
     proxy: {
       '/api': {
         target: API_URL,
@@ -36,7 +42,7 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: false,
-    minify: 'esbuild', // Use esbuild (default, faster than terser)
+    minify: 'terser',
     rollupOptions: {
       output: {
         manualChunks: {
@@ -47,6 +53,6 @@ export default defineConfig({
   },
   preview: {
     host: '0.0.0.0',
-    port: 3000,
+    port: parseInt(process.env.PORT || '3000'),
   }
 })
