@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gradient-to-br from-cute-pink via-cute-purple to-cute-blue min-h-screen;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+  }
+}
+
+@layer components {
+  .btn-cute {
+    @apply px-8 py-4 rounded-full text-xl font-bold shadow-lg transform transition-all duration-300 hover:scale-110 active:scale-95;
+  }
+  
+  .btn-primary {
+    @apply btn-cute bg-gradient-to-r from-pink-400 to-purple-500 text-white hover:from-pink-500 hover:to-purple-600;
+  }
+  
+  .btn-secondary {
+    @apply btn-cute bg-gradient-to-r from-blue-400 to-cyan-500 text-white hover:from-blue-500 hover:to-cyan-600;
+  }
+  
+  .card-cute {
+    @apply bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-8 transform transition-all duration-300 hover:scale-105;
+  }
+}
