@@ -1,111 +1,171 @@
 # 🧀 Cheese & Click - Virtual Photobooth
 
-Webapp virtual photobooth với theme dễ thương, được xây dựng bằng React + Tailwind CSS (frontend) và Python FastAPI (backend).
+A professional, commercial-ready virtual photobooth web application built with React + Tailwind CSS (frontend) and Python FastAPI (backend). Perfect for events, parties, weddings, and commercial use.
 
-## ✨ Tính năng
+## ✨ Features
 
-- 🎯 Start page với giao diện dễ thương
-- 🖼️ Chọn khung ảnh (3, 4, hoặc 6 ảnh)
-- 📸 Chụp ảnh từng tấm với camera
-- 🎨 Chọn template và filter cho ảnh
-- 💾 Tải xuống ảnh đã xử lý
+- 🎯 **Beautiful Start Page** - Animated welcome screen with feature highlights
+- 🖼️ **Frame Selection** - Choose from 3, 4, or 6 photo layouts with live previews
+- 📸 **Camera Capture** - Professional photo capture with countdown timer
+- 🎨 **Templates & Filters** - Multiple templates and filters with live preview
+- 💾 **Download & Share** - Download, share, and print your final photos
+- 📱 **Responsive Design** - Works perfectly on desktop, tablet, and mobile
+- ⚡ **Real-time Updates** - WebSocket support for synchronized experiences
 
-## 🚀 Cài đặt và chạy
+## 🚀 Quick Start
 
-**📝 Xem hướng dẫn chi tiết tại [INSTALL.md](./INSTALL.md)**
+**📝 See detailed installation guide at [INSTALL.md](./INSTALL.md)**
 
-### Yêu cầu
-- Node.js (v18+) và npm
+### Requirements
+- Node.js (v18+) and npm
 - Python 3.8+
 
-### Cách nhanh nhất
+### Quick Setup
 
 ```bash
-# Cài đặt Node.js nếu chưa có (Ubuntu/Debian)
+# Install Node.js if needed (Ubuntu/Debian)
 sudo apt-get install nodejs npm
 
-# Chạy script tự động
+# Run automated setup and start
 ./start.sh
 ```
 
-Script sẽ tự động:
-- Kiểm tra và cài đặt dependencies
-- Tạo Python virtual environment
-- Khởi động cả frontend và backend
+The script will automatically:
+- Check dependencies
+- Install frontend packages
+- Create Python virtual environment
+- Install backend dependencies
+- Start both servers
 
-### Chạy thủ công
+### Manual Setup
 
 **Frontend:**
 ```bash
 npm install
 npm run dev
 ```
-→ `http://localhost:3000`
+→ Available at `http://localhost:3000`
 
 **Backend:**
 ```bash
 cd backend
 python3 -m venv venv
-source venv/bin/activate
+source venv/bin/activate  # Linux/Mac
+# or venv\Scripts\activate  # Windows
 pip install -r requirements.txt
 python main.py
 ```
-→ `http://localhost:8000`
+→ Available at `http://localhost:8000`
+→ API Docs at `http://localhost:8000/docs`
 
-## 📁 Cấu trúc dự án
+## 📁 Project Structure
 
 ```
 cheese-and-click/
 ├── src/
-│   ├── pages/
-│   │   ├── StartPage.jsx          # Trang bắt đầu
-│   │   ├── FrameSelectionPage.jsx # Chọn khung ảnh
-│   │   ├── CameraPage.jsx         # Chụp ảnh
-│   │   └── TemplateFilterPage.jsx # Chọn template & filter
-│   ├── App.jsx                    # Routing
-│   ├── main.jsx                   # Entry point
-│   └── index.css                  # Tailwind styles
+│   ├── components/          # Reusable UI components
+│   │   ├── Button.jsx       # Button component
+│   │   ├── Card.jsx         # Card component
+│   │   └── Countdown.jsx    # Countdown timer
+│   ├── pages/               # Page components
+│   │   ├── StartPage.jsx           # Welcome page
+│   │   ├── FrameSelectionPage.jsx  # Frame selection
+│   │   ├── CameraPage.jsx          # Photo capture
+│   │   ├── TemplateFilterPage.jsx  # Customization
+│   │   └── ResultPage.jsx          # Final result
+│   ├── utils/               # Utilities
+│   │   └── imageProcessing.js      # Image processing
+│   ├── App.jsx              # Routing
+│   └── index.css            # Global styles
 ├── backend/
-│   ├── main.py                    # FastAPI app
-│   └── requirements.txt           # Python dependencies
-├── package.json                   # Frontend dependencies
-└── vite.config.js                 # Vite config
+│   ├── main.py              # FastAPI application
+│   └── requirements.txt     # Python dependencies
+├── package.json             # Frontend dependencies
+└── vite.config.js           # Vite configuration
 ```
 
-## 🎨 Theme
+## 🎨 Design & Theme
 
-App sử dụng theme dễ thương với:
-- Màu sắc: Pink, Purple, Blue gradient
-- Font: Comic Sans MS
-- Animation: Bounce, pulse effects
-- Icons: Emoji để tăng tính dễ thương
+The application features a cute, commercial-friendly design with:
+- **Color Palette**: Pink, Purple, Blue gradients
+- **Typography**: Comic Sans MS with fallbacks
+- **Animations**: Smooth transitions, float effects, glow animations
+- **Components**: Reusable, customizable UI components
+- **Responsive**: Mobile-first responsive design
 
-## 🔄 Flow
+## 🔄 User Flow
 
-1. **Start Page** → Bấm "Bắt đầu thôi!"
-2. **Frame Selection** → Chọn số lượng ảnh (3, 4, hoặc 6)
-3. **Camera Page** → Chụp từng ảnh theo số lượng đã chọn
-4. **Template & Filter** → Chọn template và filter
-5. **Result** → Xem và tải xuống ảnh cuối cùng
+1. **Start Page** → Click "Start Your Photobooth Experience"
+2. **Frame Selection** → Choose 3, 4, or 6 photo layout
+3. **Camera Page** → Capture photos with countdown timer
+4. **Template & Filter** → Select template and filter with live preview
+5. **Result Page** → Download, share, or print final photo
 
-## 🛠️ Công nghệ sử dụng
+## 🛠️ Technology Stack
 
-- **Frontend**: React 18, React Router, Tailwind CSS, Vite
-- **Backend**: FastAPI, WebSocket, Python
-- **Camera**: MediaDevices API
+### Frontend
+- **React 18** - UI library
+- **React Router** - Client-side routing
+- **Tailwind CSS** - Utility-first CSS framework
+- **Vite** - Fast build tool and dev server
 
-## 📝 Lưu ý
+### Backend
+- **FastAPI** - Modern Python web framework
+- **WebSocket** - Real-time communication
+- **Uvicorn** - ASGI server
+- **Pillow** - Image processing (ready for implementation)
 
-- Cần quyền truy cập camera để chụp ảnh
-- Backend API đang ở dạng cơ bản, cần implement thêm logic xử lý ảnh thực tế
-- Template và filter hiện tại là placeholder, cần implement image processing
+## 📝 API Documentation
 
-## 🎯 TODO
+### Endpoints
 
-- [ ] Implement image processing với Pillow
-- [ ] Thêm các template thực tế
-- [ ] Thêm các filter thực tế
-- [ ] Lưu trữ ảnh (local storage hoặc cloud)
-- [ ] Thêm countdown timer khi chụp ảnh
-- [ ] Thêm preview real-time với filter
-- [ ] Responsive design cho mobile
+- `GET /` - API information
+- `GET /api/health` - Health check
+- `GET /api/templates` - Get available templates
+- `GET /api/filters` - Get available filters
+- `POST /api/photos/upload` - Upload photo
+- `POST /api/photos/process` - Process photos with template/filter
+- `WS /ws` - WebSocket for real-time updates
+
+Full API documentation available at `/docs` when backend is running.
+
+## 🎯 Commercial Features
+
+- ✅ Professional UI/UX design
+- ✅ Smooth animations and transitions
+- ✅ Error handling and user feedback
+- ✅ Camera permission handling
+- ✅ Download and share functionality
+- ✅ Print-ready output
+- ✅ Responsive design
+- ✅ WebSocket support for multi-device sync
+- ✅ Extensible architecture
+
+## 🔮 Future Enhancements
+
+- [ ] Advanced image processing with Pillow
+- [ ] Cloud storage integration (S3, Azure)
+- [ ] User authentication and sessions
+- [ ] Photo gallery and history
+- [ ] Social media integration
+- [ ] QR code generation for sharing
+- [ ] Custom branding options
+- [ ] Analytics and usage tracking
+- [ ] Multi-language support
+- [ ] Admin dashboard
+
+## 📄 License
+
+See [LICENSE](./LICENSE) file for details.
+
+## 🤝 Contributing
+
+This is a commercial product. For licensing and commercial inquiries, please contact the project owner.
+
+## 📞 Support
+
+For issues, questions, or commercial inquiries, please open an issue in the repository.
+
+---
+
+**Made with ❤️ for creating memorable moments**

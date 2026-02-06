@@ -5,7 +5,11 @@
 @layer base {
   body {
     @apply bg-gradient-to-br from-cute-pink via-cute-purple to-cute-blue min-h-screen;
-    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-family: 'Comic Sans MS', 'Segoe UI', cursive, sans-serif;
+  }
+  
+  * {
+    @apply box-border;
   }
 }
 
@@ -25,4 +29,67 @@
   .card-cute {
     @apply bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-8 transform transition-all duration-300 hover:scale-105;
   }
+  
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500;
+  }
+  
+  .glass-effect {
+    @apply bg-white/20 backdrop-blur-md border border-white/30;
+  }
+  
+  .photo-frame {
+    @apply border-4 border-white shadow-2xl rounded-xl overflow-hidden;
+  }
+  
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+}
+
+@layer utilities {
+  .text-shadow {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  .text-shadow-lg {
+    text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 20px rgba(255, 182, 193, 0.5);
+  }
+  to {
+    box-shadow: 0 0 30px rgba(255, 182, 193, 0.8), 0 0 40px rgba(221, 160, 221, 0.5);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.5s ease-out;
 }

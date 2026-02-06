@@ -41,20 +41,44 @@ echo ""
 
 # Setup backend
 echo "🐍 Setting up backend..."
-if [ ! -d "backend/venv" ]; then
+if [ ! -d "backend/venv" ] || [ ! -f "backend/venv/bin/activate" ]; then
     echo "   Creating virtual environment..."
     cd backend
+    # Remove broken venv if exists
+    if [ -d "venv" ]; then
+        echo "   Removing broken venv..."
+        rm -rf venv
+    fi
     python3 -m venv venv
+    if [ ! -f "venv/bin/activate" ]; then
+        echo "❌ Failed to create virtual environment"
+        cd ..
+        exit 1
+    fi
     source venv/bin/activate
     echo "   Upgrading pip..."
     pip install --upgrade pip --quiet
     echo "   Installing Python packages..."
-    pip install -r requirements.txt --quiet
+    if ! pip install -r requirements.txt; then
+        echo "❌ Failed to install dependencies. Please check your internet connection."
+        deactivate
+        cd ..
+        exit 1
+    fi
     deactivate
     cd ..
     echo "   ✅ Backend virtual environment created"
 else
     echo "   ✅ Backend virtual environment already exists"
+    # Check if packages are installed
+    cd backend
+    source venv/bin/activate
+    if ! python3 -c "import fastapi" 2>/dev/null; then
+        echo "   Installing missing packages..."
+        pip install -r requirements.txt
+    fi
+    deactivate
+    cd ..
 fi
 echo ""
 

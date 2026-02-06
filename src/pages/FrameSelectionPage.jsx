@@ -1,14 +1,38 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import Button from '../components/Button'
+import Card from '../components/Card'
 
+/**
+ * Frame Selection Page - Choose photo layout (3, 4, or 6 photos)
+ */
 function FrameSelectionPage() {
   const navigate = useNavigate()
   const [selectedFrame, setSelectedFrame] = useState(null)
+  const [isTransitioning, setIsTransitioning] = useState(false)
 
   const frames = [
-    { id: 3, label: '3 Ảnh', emoji: '📷📷📷' },
-    { id: 4, label: '4 Ảnh', emoji: '📸📸📸📸' },
-    { id: 6, label: '6 Ảnh', emoji: '📷📷📷📷📷📷' },
+    { 
+      id: 3, 
+      label: '3 Photos', 
+      emoji: '📷📷📷',
+      description: 'Perfect for single portraits or small groups',
+      preview: ['1', '2', '3']
+    },
+    { 
+      id: 4, 
+      label: '4 Photos', 
+      emoji: '📸📸📸📸',
+      description: 'Ideal for couples or small groups',
+      preview: ['1', '2', '3', '4']
+    },
+    { 
+      id: 6, 
+      label: '6 Photos', 
+      emoji: '📷📷📷📷📷📷',
+      description: 'Great for larger groups or more variety',
+      preview: ['1', '2', '3', '4', '5', '6']
+    },
   ]
 
   const handleSelectFrame = (frameId) => {
@@ -17,54 +41,107 @@ function FrameSelectionPage() {
 
   const handleContinue = () => {
     if (selectedFrame) {
-      navigate(`/camera?frames=${selectedFrame}`)
+      setIsTransitioning(true)
+      setTimeout(() => {
+        navigate(`/camera?frames=${selectedFrame}`)
+      }, 300)
     }
   }
 
-  return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="text-center w-full max-w-4xl">
-        <h1 className="text-6xl font-bold text-white drop-shadow-2xl mb-8">
-          Chọn khung ảnh của bạn! 🖼️
-        </h1>
+  const handleBack = () => {
+    setIsTransitioning(true)
+    setTimeout(() => {
+      navigate('/')
+    }, 300)
+  }
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {frames.map((frame) => (
-            <div
+  return (
+    <div className={`min-h-screen flex items-center justify-center p-4 transition-opacity duration-300 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
+      <div className="text-center w-full max-w-6xl">
+        {/* Header */}
+        <div className="mb-10 animate-slide-in">
+          <h1 className="text-6xl md:text-7xl font-bold text-white text-shadow-lg mb-4">
+            Choose Your Frame 🖼️
+          </h1>
+          <p className="text-2xl text-white/90 text-shadow">
+            Select how many photos you'd like to take
+          </p>
+        </div>
+
+        {/* Frame Options */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+          {frames.map((frame, index) => (
+            <Card
               key={frame.id}
               onClick={() => handleSelectFrame(frame.id)}
-              className={`card-cute cursor-pointer ${
+              className={`cursor-pointer transition-all duration-300 ${
                 selectedFrame === frame.id
-                  ? 'ring-4 ring-yellow-400 scale-110'
-                  : ''
-              }`}
+                  ? 'ring-4 ring-yellow-400 scale-105 shadow-3xl bg-gradient-to-br from-yellow-50 to-pink-50'
+                  : 'hover:ring-2 hover:ring-white/50'
+              } animate-slide-in`}
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <div className="text-6xl mb-4">{frame.emoji}</div>
-              <h2 className="text-3xl font-bold text-gray-800 mb-2">
+              <div className="text-7xl mb-4">{frame.emoji}</div>
+              <h2 className="text-3xl font-bold text-gray-800 mb-3">
                 {frame.label}
               </h2>
-              <p className="text-lg text-gray-600">
-                Khung {frame.id} ảnh
+              <p className="text-lg text-gray-600 mb-4">
+                {frame.description}
               </p>
-            </div>
+              
+              {/* Preview Grid */}
+              <div className={`grid gap-2 ${
+                frame.id === 3 ? 'grid-cols-2' :
+                frame.id === 4 ? 'grid-cols-2' :
+                'grid-cols-3'
+              }`}>
+                {frame.preview.map((num, i) => (
+                  <div
+                    key={i}
+                    className="aspect-square bg-gradient-to-br from-pink-200 to-purple-200 rounded-lg flex items-center justify-center text-2xl font-bold text-gray-600 border-2 border-white"
+                  >
+                    {num}
+                  </div>
+                ))}
+              </div>
+              
+              {selectedFrame === frame.id && (
+                <div className="mt-4 text-yellow-600 font-bold text-lg animate-bounce">
+                  ✓ Selected
+                </div>
+              )}
+            </Card>
           ))}
         </div>
 
-        {selectedFrame && (
-          <button
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <Button
+            variant="primary"
+            size="lg"
             onClick={handleContinue}
-            className="btn-primary text-xl"
+            disabled={!selectedFrame || isTransitioning}
+            className="min-w-[250px]"
           >
-            Tiếp tục với {selectedFrame} ảnh ➡️
-          </button>
-        )}
+            {isTransitioning ? 'Loading...' : `Continue with ${selectedFrame || '...'} Photos ➡️`}
+          </Button>
+          
+          <Button
+            variant="ghost"
+            size="lg"
+            onClick={handleBack}
+            disabled={isTransitioning}
+          >
+            ← Back to Start
+          </Button>
+        </div>
 
-        <button
-          onClick={() => navigate('/')}
-          className="mt-4 text-white/80 hover:text-white text-lg underline"
-        >
-          ← Quay lại
-        </button>
+        {/* Help Text */}
+        {!selectedFrame && (
+          <p className="mt-6 text-white/70 text-lg animate-pulse">
+            👆 Click on a frame option above to select
+          </p>
+        )}
       </div>
     </div>
   )

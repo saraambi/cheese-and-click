@@ -24,20 +24,43 @@ if [ ! -d "node_modules" ]; then
 fi
 
 # Setup backend
-if [ ! -d "backend/venv" ]; then
+if [ ! -d "backend/venv" ] || [ ! -f "backend/venv/bin/activate" ]; then
     echo "🐍 Creating Python virtual environment..."
+    echo "⚠️  If this fails, please run './setup.sh' first to install dependencies"
     cd backend
+    # Remove broken venv if exists
+    if [ -d "venv" ]; then
+        echo "   Removing broken venv..."
+        rm -rf venv
+    fi
     python3 -m venv venv
+    if [ ! -f "venv/bin/activate" ]; then
+        echo "❌ Failed to create virtual environment"
+        cd ..
+        exit 1
+    fi
     source venv/bin/activate
-    pip install --upgrade pip
-    pip install -r requirements.txt
+    echo "   Installing dependencies (this may take a moment)..."
+    pip install --upgrade pip --quiet
+    if ! pip install -r requirements.txt --quiet; then
+        echo "❌ Failed to install dependencies. Please check your internet connection."
+        echo "   You can also run './setup.sh' separately to install dependencies."
+        deactivate
+        cd ..
+        exit 1
+    fi
     deactivate
     cd ..
+    echo "   ✅ Backend dependencies installed"
 fi
 
 # Start backend in background
 echo "🚀 Starting backend server..."
 cd backend
+if [ ! -f "venv/bin/activate" ]; then
+    echo "❌ Virtual environment is broken. Please run ./setup.sh first"
+    exit 1
+fi
 source venv/bin/activate
 python3 main.py > ../backend.log 2>&1 &
 BACKEND_PID=$!

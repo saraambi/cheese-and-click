@@ -1,6 +1,12 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import Button from '../components/Button'
+import Card from '../components/Card'
+import Countdown from '../components/Countdown'
 
+/**
+ * Camera Page - Capture photos with countdown timer
+ */
 function CameraPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -9,6 +15,10 @@ function CameraPage() {
   const [currentPhoto, setCurrentPhoto] = useState(0)
   const [photos, setPhotos] = useState([])
   const [isCapturing, setIsCapturing] = useState(false)
+  const [showCountdown, setShowCountdown] = useState(false)
+  const [cameraError, setCameraError] = useState(null)
+  const [isProcessing, setIsProcessing] = useState(false)
+  
   const videoRef = useRef(null)
   const canvasRef = useRef(null)
   const streamRef = useRef(null)
@@ -22,8 +32,13 @@ function CameraPage() {
 
   const startCamera = async () => {
     try {
+      setCameraError(null)
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: 1280, height: 720 }
+        video: { 
+          facingMode: 'user',
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
       })
       if (videoRef.current) {
         videoRef.current.srcObject = stream
@@ -31,20 +46,32 @@ function CameraPage() {
       }
     } catch (error) {
       console.error('Error accessing camera:', error)
-      alert('Không thể truy cập camera. Vui lòng kiểm tra quyền truy cập.')
+      setCameraError('Unable to access camera. Please check permissions and try again.')
     }
   }
 
   const stopCamera = () => {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => track.stop())
+      streamRef.current = null
     }
   }
 
+  const handleCountdownComplete = () => {
+    setShowCountdown(false)
+    capturePhoto()
+  }
+
+  const startCapture = () => {
+    if (currentPhoto >= totalFrames) return
+    setShowCountdown(true)
+  }
+
   const capturePhoto = () => {
-    if (!videoRef.current || !canvasRef.current) return
+    if (!videoRef.current || !canvasRef.current || isCapturing) return
 
     setIsCapturing(true)
+    setIsProcessing(true)
     
     const canvas = canvasRef.current
     const video = videoRef.current
@@ -53,7 +80,11 @@ function CameraPage() {
     canvas.height = video.videoHeight
     
     const ctx = canvas.getContext('2d')
-    ctx.drawImage(video, 0, 0)
+    // Mirror the image for selfie view
+    ctx.save()
+    ctx.scale(-1, 1)
+    ctx.drawImage(video, -canvas.width, 0)
+    ctx.restore()
     
     const photoData = canvas.toDataURL('image/png')
     
@@ -62,91 +93,182 @@ function CameraPage() {
         const newPhotos = [...prevPhotos, photoData]
         setCurrentPhoto(newPhotos.length)
         setIsCapturing(false)
+        setIsProcessing(false)
         
         if (newPhotos.length >= totalFrames) {
           stopCamera()
           setTimeout(() => {
             navigate('/template-filter', { state: { photos: newPhotos } })
-          }, 300)
+          }, 500)
         }
         return newPhotos
       })
-    }, 500)
+    }, 300)
+  }
+
+  const retakeLastPhoto = () => {
+    if (photos.length > 0) {
+      setPhotos(prevPhotos => prevPhotos.slice(0, -1))
+      setCurrentPhoto(prev => Math.max(0, prev - 1))
+    }
   }
 
   const handleFinish = () => {
+    if (photos.length > 0) {
+      stopCamera()
+      navigate('/template-filter', { state: { photos: [...photos] } })
+    }
+  }
+
+  const handleBack = () => {
     stopCamera()
-    navigate('/template-filter', { state: { photos: [...photos] } })
+    navigate('/select-frame')
+  }
+
+  if (cameraError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <Card className="max-w-md text-center">
+          <div className="text-6xl mb-4">📷❌</div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Camera Access Error</h2>
+          <p className="text-gray-600 mb-6">{cameraError}</p>
+          <div className="flex flex-col gap-3">
+            <Button variant="primary" onClick={startCamera}>
+              Try Again 🔄
+            </Button>
+            <Button variant="ghost" onClick={handleBack}>
+              ← Go Back
+            </Button>
+          </div>
+        </Card>
+      </div>
+    )
   }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
-      <div className="text-center mb-6">
-        <h1 className="text-5xl font-bold text-white drop-shadow-2xl mb-2">
-          📸 Chụp ảnh {currentPhoto + 1}/{totalFrames}
+      {/* Countdown Overlay */}
+      {showCountdown && (
+        <Countdown 
+          seconds={3} 
+          onComplete={handleCountdownComplete}
+          autoStart={true}
+        />
+      )}
+
+      {/* Header */}
+      <div className="text-center mb-6 animate-slide-in">
+        <h1 className="text-5xl md:text-6xl font-bold text-white text-shadow-lg mb-2">
+          📸 Photo {currentPhoto + 1} of {totalFrames}
         </h1>
-        <p className="text-xl text-white/90">
-          Chuẩn bị tư thế đáng yêu nào! ✨
+        <p className="text-xl text-white/90 text-shadow">
+          {isProcessing ? 'Processing...' : 'Get ready and strike a pose! ✨'}
         </p>
+        
+        {/* Progress Bar */}
+        <div className="mt-4 w-full max-w-md mx-auto bg-white/20 rounded-full h-3 overflow-hidden">
+          <div 
+            className="bg-gradient-to-r from-pink-400 to-purple-500 h-full transition-all duration-500 rounded-full"
+            style={{ width: `${((currentPhoto) / totalFrames) * 100}%` }}
+          />
+        </div>
       </div>
 
-      <div className="card-cute mb-6 relative">
-        <div className="relative">
+      {/* Camera Preview */}
+      <Card className="mb-6 relative max-w-4xl w-full">
+        <div className="relative bg-black rounded-2xl overflow-hidden">
           <video
             ref={videoRef}
             autoPlay
             playsInline
             muted
-            className="rounded-2xl w-full max-w-2xl"
+            className="w-full h-auto"
             style={{ transform: 'scaleX(-1)' }}
           />
           {isCapturing && (
-            <div className="absolute inset-0 bg-white/50 flex items-center justify-center rounded-2xl">
-              <div className="text-6xl animate-bounce">📸</div>
+            <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
+              <div className="text-8xl animate-bounce">📸</div>
+            </div>
+          )}
+          {isProcessing && (
+            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+              <div className="text-white text-2xl">Processing...</div>
             </div>
           )}
         </div>
         <canvas ref={canvasRef} className="hidden" />
-      </div>
+      </Card>
 
-      <div className="flex gap-4 mb-4">
-        <button
-          onClick={capturePhoto}
-          disabled={isCapturing || currentPhoto >= totalFrames}
-          className="btn-primary text-xl disabled:opacity-50 disabled:cursor-not-allowed"
+      {/* Controls */}
+      <div className="flex flex-wrap gap-4 justify-center mb-6">
+        <Button
+          variant="primary"
+          size="lg"
+          onClick={startCapture}
+          disabled={isCapturing || currentPhoto >= totalFrames || showCountdown}
+          className="min-w-[200px]"
         >
-          {isCapturing ? 'Đang chụp...' : '📷 Chụp ảnh!'}
-        </button>
+          {isCapturing ? 'Capturing...' : '📷 Take Photo'}
+        </Button>
         
         {photos.length > 0 && (
-          <button
-            onClick={handleFinish}
-            className="btn-secondary text-xl"
-          >
-            Hoàn thành ({photos.length}/{totalFrames}) ✅
-          </button>
+          <>
+            <Button
+              variant="secondary"
+              size="lg"
+              onClick={retakeLastPhoto}
+              disabled={isCapturing || showCountdown}
+            >
+              🔄 Retake Last
+            </Button>
+            
+            <Button
+              variant="secondary"
+              size="lg"
+              onClick={handleFinish}
+              disabled={isCapturing || showCountdown}
+            >
+              Finish ({photos.length}/{totalFrames}) ✅
+            </Button>
+          </>
         )}
       </div>
 
+      {/* Photo Preview Grid */}
       {photos.length > 0 && (
-        <div className="flex gap-2 flex-wrap justify-center max-w-4xl">
-          {photos.map((photo, index) => (
-            <img
-              key={index}
-              src={photo}
-              alt={`Photo ${index + 1}`}
-              className="w-20 h-20 object-cover rounded-lg border-2 border-white shadow-lg"
-            />
-          ))}
-        </div>
+        <Card className="max-w-4xl w-full mb-6">
+          <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">
+            Your Photos ({photos.length}/{totalFrames})
+          </h3>
+          <div className={`grid gap-3 ${
+            photos.length <= 3 ? 'grid-cols-3' :
+            photos.length <= 4 ? 'grid-cols-4' :
+            'grid-cols-6'
+          }`}>
+            {photos.map((photo, index) => (
+              <div key={index} className="relative group">
+                <img
+                  src={photo}
+                  alt={`Photo ${index + 1}`}
+                  className="w-full h-auto rounded-lg border-2 border-pink-300 shadow-lg"
+                />
+                <div className="absolute top-1 right-1 bg-pink-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
+                  {index + 1}
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
       )}
 
-      <button
-        onClick={() => navigate('/select-frame')}
-        className="mt-4 text-white/80 hover:text-white text-lg underline"
+      {/* Back Button */}
+      <Button
+        variant="ghost"
+        onClick={handleBack}
+        disabled={isCapturing || showCountdown}
       >
-        ← Quay lại
-      </button>
+        ← Back to Frame Selection
+      </Button>
     </div>
   )
 }
