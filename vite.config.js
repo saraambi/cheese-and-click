@@ -2,14 +2,15 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 // Get API URL from environment variable
-// For GitHub Pages, this will be set in GitHub Secrets
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
-const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8000'
+// In vite.config.js, use process.env (not import.meta.env)
+// import.meta.env only works in client code, not in config files
+const API_URL = process.env.VITE_API_URL || 'http://localhost:8000'
+const WS_URL = process.env.VITE_WS_URL || 'ws://localhost:8000'
 
 // Base path for GitHub Pages
 // If repository name is not 'username.github.io', set this to '/repository-name/'
 // Otherwise, use '/'
-const BASE_PATH = import.meta.env.VITE_BASE_PATH || '/'
+const BASE_PATH = process.env.VITE_BASE_PATH || '/'
 
 export default defineConfig({
   plugins: [react()],
@@ -35,7 +36,7 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: false,
-    minify: 'terser',
+    minify: 'esbuild', // Use esbuild (default, faster than terser)
     rollupOptions: {
       output: {
         manualChunks: {
